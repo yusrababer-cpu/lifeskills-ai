@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /thanks.html
+
+Sitemap: https://lifeskills-ai.netlify.app/sitemap.xml
