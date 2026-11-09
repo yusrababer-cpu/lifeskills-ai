@@ -10,8 +10,10 @@ body { font-family: Arial, sans-serif; margin: 0; line-height: 1.7; color: #1f2d
 header, section, footer { max-width: 760px; margin: 0 auto; padding: 24px 20px; }
 h1 { font-size: 2rem; color: #1b4f8a; }
 h2 { font-size: 1.4rem; color: #1b4f8a; }
-.button { display: inline-block; background: #1b4f8a; color: #fff; padding: 16px 28px; border-radius: 10px; font-size: 1.1rem; text-decoration: none; }
+.button { display: inline-block; background: #1b4f8a; color: #fff; padding: 16px 28px; border-radius: 10px; font-size: 1.1rem; text-decoration: none; border: 0; cursor: pointer; }
 ul { padding-left: 20px; }
+label { display: block; margin-top: 14px; font-weight: bold; }
+input, select { width: 100%; max-width: 420px; padding: 14px; font-size: 1.05rem; border: 2px solid #9db7d3; border-radius: 8px; box-sizing: border-box; }
 footer { font-size: 0.9rem; color: #5b6b7b; }
 </style>
 </head>
@@ -40,8 +42,25 @@ footer { font-size: 0.9rem; color: #5b6b7b; }
 <p>Parents, special education teachers, occupational therapists and caregivers can customize functional skills for autism and track progress. LifeSkills AI supports your decisions and never replaces you or qualified professionals.</p>
 </section>
 <section id="waitlist">
-<h2>Get Early Access</h2>
-<p>We are building LifeSkills AI with real families and educators. Early members get free access and help shape the platform. The signup form is coming in the next step.</p>
+<h2>Get Free Early Access</h2>
+<p>We are building LifeSkills AI with real families and educators. Early members get free access and help shape the platform. Tell us your email and which life skill you want to see first.</p>
+<form name="early-access" method="POST" action="/thanks.html" data-netlify="true">
+<input type="hidden" name="form-name" value="early-access">
+<label for="email">Your email</label>
+<input type="email" id="email" name="email" required>
+<label for="role">I am a</label>
+<select id="role" name="role">
+<option>Parent or caregiver</option>
+<option>Teacher</option>
+<option>Therapist</option>
+<option>Autistic adult or teenager</option>
+<option>Other</option>
+</select>
+<label for="skill">Which daily living skill would help most?</label>
+<input type="text" id="skill" name="skill" placeholder="For example: brushing teeth, shopping, dressing">
+<p><button class="button" type="submit">Join the Early Access List</button></p>
+<p>We will only use your email to tell you about LifeSkills AI. No spam.</p>
+</form>
 </section>
 <footer>
 <p>&copy; 2026 LifeSkills AI. Respecting neurodiversity, dignity and individual differences.</p>
