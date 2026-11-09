@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Visual Routine Builder for Autism | Daily Living Skills | LifeSkills AI</title>
+<meta name="description" content="Build a free visual step-by-step routine for autistic children, teenagers and adults. Choose a daily living skill, pick a support level and print an autism visual schedule.">
+<style>
+body { font-family: Arial, sans-serif; margin: 0; line-height: 1.6; color: #1f2d3d; background: #f7fbff; }
+main { max-width: 760px; margin: 0 auto; padding: 20px; }
+h1 { font-size: 1.8rem; color: #1b4f8a; }
+h2 { color: #1b4f8a; }
+label { display: block; margin-top: 14px; font-weight: bold; }
+input[type=text], select { width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid #9db7d3; border-radius: 8px; box-sizing: border-box; }
+button, .button { background: #1b4f8a; color: #fff; padding: 16px 28px; border: 0; border-radius: 10px; font-size: 1.1rem; cursor: pointer; margin: 18px 10px 0 0; text-decoration: none; display: inline-block; }
+.card { display: flex; align-items: center; gap: 18px; background: #fff; border: 3px solid #cfe0f2; border-radius: 16px; padding: 16px; margin: 14px 0; }
+.card.done { background: #e6f7e9; border-color: #8fd19e; }
+.icon { font-size: 3rem; min-width: 70px; text-align: center; }
+.num { font-size: 0.9rem; color: #5b6b7b; }
+.word { font-size: 1.5rem; font-weight: bold; }
+.big .word { font-size: 2.1rem; }
+.big .sentence { font-size: 1.5rem; }
+.tick { margin-left: auto; font-size: 1rem; }
+.tick input { width: 28px; height: 28px; }
+.note { font-size: 0.9rem; color: #5b6b7b; margin-top: 30px; }
+@media print { .controls, .note, .tick, .nav { display: none; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<p class="nav"><a href="/">&larr; LifeSkills AI home</a></p>
+<h1>Free Visual Routine Builder for Autism Daily Living Skills</h1>
+<p class="controls">Make a clear step-by-step visual routine in seconds. Choose a skill and the amount of support, then tick off each step or print it as a visual schedule.</p>
+<div class="controls">
+<label for="name">Learner's name (optional)</label>
+<input type="text" id="name" placeholder="For example: Sam">
+<label for="skill">Choose a daily living skill</label>
+<select id="skill"></select>
+<label for="level">Support level</label>
+<select id="level">
+<option value="picture">Pictures with one word</option>
+<option value="full">Pictures with short sentences</option>
+</select>
+<label><input type="checkbox" id="big"> Extra large text</label>
+<button id="build" type="button">Build routine</button>
+</div>
+<div id="out" aria-live="polite"></div>
+<div id="actions"></div>
+<p class="note">Every learner is different. Change the steps to fit the person you support. This tool supports parents, teachers and therapists and does not replace professional advice. Nothing you type is stored or sent anywhere.</p>
+</main>
+<script>
+var SKILLS = {
+brush: { title: 'Brushing teeth', steps: [
+['🪥','Brush','Pick up your toothbrush and toothpaste.'],
+['🧴','Paste','Put a small dot of toothpaste on the brush.'],
+['😁','Front','Brush the front of your teeth in small circles.'],
+['🦷','Back','Brush the top and back of your teeth.'],
+['👅','Tongue','Gently brush your tongue.'],
+['🚰','Spit','Spit the toothpaste into the sink.'],
+['💦','Rinse','Rinse your mouth with water.'],
+['✅','Done','Rinse the brush and put it away.'] ]},
+hands: { title: 'Washing hands', steps: [
+['🚰','Water','Turn on the water.'],
+['🧼','Soap','Put soap on your wet hands.'],
+['🙌','Rub','Rub your hands together for 20 seconds.'],
+['💦','Rinse','Rinse the soap off.'],
+['🧻','Dry','Dry your hands with a towel.'],
+['✅','Done','Turn off the water. All clean!'] ]},
+dress: { title: 'Getting dressed', steps: [
+['👕','Choose','Choose clothes for the day.'],
+['🩲','Under','Put on underwear and an undershirt.'],
+['👖','Pants','Put on your pants.'],
+['👚','Shirt','Put on your shirt.'],
+['🧦','Socks','Put on your socks.'],
+['👟','Shoes','Put on your shoes.'],
+['🪞','Check','Look in the mirror. Are you ready?'] ]},
+sandwich: { title: 'Making a sandwich', steps: [
+['🧼','Wash','Wash your hands.'],
+['🍞','Bread','Put two slices of bread on a plate.'],
+['🧈','Spread','Spread butter or a spread on the bread.'],
+['🧀','Filling','Add your filling.'],
+['🥪','Close','Put the second slice on top.'],
+['🍽️','Eat','Sit down and enjoy your sandwich.'],
+['🧽','Clean','Put things away and wipe the table.'] ]},
+shop: { title: 'Shopping at a store', steps: [
+['📝','List','Write or look at your shopping list.'],
+['👛','Money','Take your money or card.'],
+['🛒','Find','Find the things on your list.'],
+['🧍','Queue','Wait in line at the checkout.'],
+['💳','Pay','Give the money or tap your card.'],
+['🧾','Receipt','Take your change and receipt.'],
+['🙂','Thanks','Say thank you and go home.'] ]}
+};
+var skillSel = document.getElementById('skill');
+Object.keys(SKILLS).forEach(function (k) {
+  var o = document.createElement('option');
+  o.value = k; o.textContent = SKILLS[k].title;
+  skillSel.appendChild(o);
+});
+document.getElementById('build').addEventListener('click', function () {
+  var s = SKILLS[skillSel.value];
+  var name = document.getElementById('name').value.trim();
+  var full = document.getElementById('level').value === 'full';
+  var out = document.getElementById('out');
+  out.innerHTML = '';
+  out.className = document.getElementById('big').checked ? 'big' : '';
+  var h = document.createElement('h2');
+  h.textContent = (name ? name + "'s routine: " : 'Routine: ') + s.title;
+  out.appendChild(h);
+  s.steps.forEach(function (st, i) {
+    var card = document.createElement('div'); card.className = 'card';
+    var ic = document.createElement('div'); ic.className = 'icon'; ic.textContent = st[0];
+    var tx = document.createElement('div');
+    var n = document.createElement('div'); n.className = 'num'; n.textContent = 'Step ' + (i + 1);
+    var w = document.createElement('div'); w.className = 'word'; w.textContent = st[1];
+    tx.appendChild(n); tx.appendChild(w);
+    if (full) { var se = document.createElement('div'); se.className = 'sentence'; se.textContent = st[2]; tx.appendChild(se); }
+    var tk = document.createElement('label'); tk.className = 'tick';
+    var cb = document.createElement('input'); cb.type = 'checkbox';
+    cb.addEventListener('change', function () { card.className = cb.checked ? 'card done' : 'card'; });
+    tk.appendChild(cb); tk.appendChild(document.createTextNode(' Done'));
+    card.appendChild(ic); card.appendChild(tx); card.appendChild(tk);
+    out.appendChild(card);
+  });
+  var act = document.getElementById('actions');
+  act.innerHTML = '';
+  var pb = document.createElement('button'); pb.type = 'button'; pb.textContent = 'Print this routine';
+  pb.addEventListener('click', function () { window.print(); });
+  var jb = document.createElement('a'); jb.className = 'button'; jb.href = '/#waitlist'; jb.textContent = 'Join early access for more skills';
+  act.appendChild(pb); act.appendChild(jb);
+  out.scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
